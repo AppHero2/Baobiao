@@ -1,0 +1,12 @@
+*.tsv
+*.egg-info
+*.idea
+*.env
+
+.cache/
+.eggs/
+build/
+dist/
+.tox/*
+__pycache__/*
+
