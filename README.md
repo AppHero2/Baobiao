@@ -21,11 +21,11 @@ That gives you usage instruction:
 usage: amazon-book-query
 ```
 ## Enviroment varaiables:
-    ```
+```
     AMAZON_ACCESS_KEY=amazon_access_key
     AMAZON_SECRET_KEY=amazon_secret_key
     AMAZON_ASSOC_KEY=amazon_associate_tag
-    ```
+```
 ## Required parameters:
     parameters for Amazon Book Query request
 
