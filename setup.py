@@ -4,22 +4,23 @@ from setuptools import setup
 
 setup(
     name = 'amazonbookquery',
-    version = '0.1',
-    url = 'https://github.com/internetarchive/amazonbookquery',
+    version = '1.0',
+    url = 'https://github.com/Eagle19243/amazon-book-query',
     author = 'Eagle19243',
     license = 'BSD',
-    py_modules = ['amazonbookquery'],
-    scripts=['utils.py'],
+    packages = ['amazonbookquery'],
+    # scripts=['amazonbookquery/utils.py'],
     description = 'Provide Amazon Book Query search result as a tsv file format',
-    install_requires=['requests>=2.18.1'],
+    install_requires=['requests'],
     entry_points = {
         'console_scripts': [
-            'amazonbookquery=amazonbookquery:main'
+            'amazonbookquery=amazonbookquery.utils:main'
         ]
     },
     setup_requires = ['pytest-runner'],
-    tests_require = ['pytest'],
+    tests_require = ['pytest', 'lxml'],
     classifiers = [
+        'Development Status :: 1 - Alpha',
         'Intended Audience :: System Administrators',
         'License :: OSI Approved :: BSD License',
         'Natural Language :: English',
