@@ -3,18 +3,18 @@
 from setuptools import setup
 
 setup(
-    name = 'amazon-book-query',
+    name = 'amazonbookquery',
     version = '0.1',
     url = 'https://github.com/internetarchive/amazonbookquery',
     author = 'Eagle19243',
     license = 'BSD',
-    py_modules = ['bookquery'],
-    scripts=['bookquery.py'],
+    py_modules = ['amazonbookquery'],
+    scripts=['utils.py'],
     description = 'Provide Amazon Book Query search result as a tsv file format',
     install_requires=['requests>=2.18.1'],
     entry_points = {
         'console_scripts': [
-            'amazon-book-query=bookquery:main'
+            'amazonbookquery=amazonbookquery:main'
         ]
     },
     setup_requires = ['pytest-runner'],

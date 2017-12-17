@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 from lxml import etree, objectify
-from bookquery.errors import AWSError
+from amazonbookquery.errors import AWSError
 
 class SelectiveClassLookup(etree.CustomElementClassLookup):
     """

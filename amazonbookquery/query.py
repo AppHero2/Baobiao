@@ -11,12 +11,12 @@ from datetime import datetime, timedelta
 from time import strftime, gmtime, sleep
 from urllib.parse import quote
 from urllib.request import HTTPError
-from bookquery.errors import *
-from bookquery.parser import Parser
+from amazonbookquery.errors import *
+from amazonbookquery.parser import Parser
 
 class Query(object):
 
-    REQUESTS_PER_SECOND = 1
+    REQUESTS_PER_SECOND = 1000
 
     def __init__(self):
         self.access_key = os.getenv('AMAZON_ACCESS_KEY')
@@ -78,7 +78,7 @@ class Query(object):
         throttle = timedelta(seconds=1 / self.REQUESTS_PER_SECOND)
         if delta < throttle:
             wait = throttle - delta
-            sleep(wait.seconds + wait.microseconds / 1000000.0)  # pragma: no cover
+            # sleep(wait.seconds + wait.microseconds / 1000000.0)  # pragma: no cover
         self.last_call = datetime.now()
 
         response = requests.get(url, stream=True)
