@@ -13,21 +13,26 @@ $ python setup.py install
 
 Once installed, run following command at the commandline with:
 ```
-$ amazon-book-query --help
+$ amazon-book-query -h
 ```
 
 That gives you usage instruction:
 ```
 usage: amazon-book-query
 ```
-
-required parameters:
+## Enviroment varaiables:
+    ```
+    AMAZON_ACCESS_KEY=amazon_access_key
+    AMAZON_SECRET_KEY=amazon_secret_key
+    AMAZON_ASSOC_KEY=amazon_associate_tag
+    ```
+## Required parameters:
     parameters for Amazon Book Query request
 
-    --source_path SOURCE_PATH
+    -s SOURCE
                     source tsv file path
-    --destination_path DESTINATION_PATH
-                    destination file path to save output file as tsv format
+    -d DESTINATION
+                    destination directory path to save output file as tsv format
 
 ## Example Usage
 The following command provide a path of output tsv file after run Amazon Book Query request

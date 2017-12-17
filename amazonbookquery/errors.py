@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 """
 Contains all errors specific to this package.
 """

@@ -5,6 +5,7 @@ import sys
 import os
 import csv
 import re
+from amazonbookquery.errors import *
 from amazonbookquery.query import Query
 
 class BookQuery:
@@ -91,7 +92,7 @@ class BookQuery:
                     row.append(aws_item['lowest_used_price'])
                     row.append(aws_item['sold_by_amazon'])
                     row.append(aws_item['sold_by_amazon_as_new'])
-                except:
+                except AWSError:
                     e = sys.exc_info()[1]
                     row = [e.code, e.msg]
 
@@ -113,7 +114,7 @@ def _parse_args(args=sys.argv[1:]):
     required.add_argument(
         '-d',
         '--destination',
-        help='output file path',
+        help='destination directory path to save output file as tsv format',
         required=True,
     )
 
@@ -139,7 +140,10 @@ def main():
     if not os.path.isfile(args.source):
         msg = 'Source should be a file'
         sys.exit(msg)
-    if os.path.splitext(args.source) != 'tsv':
+
+    (filename, ext) = os.path.splitext(args.source)
+    if ext != '.tsv':
+        print(os.path.splitext(args.source))
         msg = 'Source should be tsv file format'
         sys.exit(msg)
     if not os.path.isdir(args.destination):

@@ -9,12 +9,12 @@ setup(
     author = 'Eagle19243',
     license = 'BSD',
     packages = ['amazonbookquery'],
-    # scripts=['amazonbookquery/utils.py'],
+    scripts=['amazonbookquery/utils.py'],
     description = 'Provide Amazon Book Query search result as a tsv file format',
     install_requires=['requests'],
     entry_points = {
         'console_scripts': [
-            'amazonbookquery=amazonbookquery.utils:main'
+            'amazon-book-query=amazonbookquery.utils:main'
         ]
     },
     setup_requires = ['pytest-runner'],
