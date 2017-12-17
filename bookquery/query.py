@@ -99,8 +99,6 @@ class Query(object):
         except AWSError:
             e = sys.exc_info()[1]  # Python 2/3 compatible
 
-            # simple errors
-
             errors = {
                 'InternalError': InternalError,
                 'InvalidClientTokenId': InvalidClientTokenId,
@@ -111,7 +109,7 @@ class Query(object):
                 'AccountLimitExceeded': AccountLimitExceeded,
                 'AWS.ECommerceService.ItemNotEligibleForCart': InvalidCartItem,
                 'AWS.ECommerceService.CartInfoMismatch': CartInfoMismatch,
-                'AWS.ParameterOutOfRange': ParameterOutOfRange,  # TODO regexp?
+                'AWS.ParameterOutOfRange': ParameterOutOfRange,
                 'AWS.InvalidAccount': InvalidAccount,
                 'SignatureDoesNotMatch': InvalidSignature,
             }
@@ -144,7 +142,6 @@ class Query(object):
                 item = self._reg('already-in-cart').search(e.msg).group('item')
                 raise _e(ItemAlreadyInCart, item)
 
-            # otherwise simply re-raise
             raise
 
     def _reg(self, key):
@@ -168,24 +165,44 @@ class Query(object):
             raise
 
     def execute_query(self, title, author):
-        print('********* execute_query ********')
-        asin = self._call(
-            Operation='ItemSearch',
-            Title=title,
-            Author=author,
-            SearchIndex='Books'
-        )
+        try:
+            asin = self._call(
+                Operation='ItemSearch',
+                Title=title,
+                Author=author,
+                SearchIndex='Books'
+            )
 
-        result = self._call(
-            Operation='ItemLookup',
-            ItemId=asin,
-            ResponseGroup=[
-                'Accessories', 'AlternateVersions',
-                'Images', 'ItemAttributes',
-                'ItemIds', 'OfferFull', 'OfferListings',
-                'Offers', 'OfferSummary'
-            ],
-            RelationshipType='AuthorityTitle'
-        )
+            item = self._call(
+                Operation='ItemLookup',
+                ItemId=asin,
+                ResponseGroup=[
+                    'Accessories', 'AlternateVersions',
+                    'Images', 'ItemAttributes',
+                    'ItemIds', 'OfferFull', 'OfferListings',
+                    'Offers', 'OfferSummary'
+                ],
+                RelationshipType='AuthorityTitle'
+            )
 
-        return result
+            if not item['sold_by_amazon']:
+                for asin in item['alternate_asin']:
+                    result = self._call(
+                        Operation='ItemLookup',
+                        ItemId=asin,
+                        ResponseGroup=[
+                            'Accessories', 'AlternateVersions',
+                            'Images', 'ItemAttributes',
+                            'ItemIds', 'OfferFull', 'OfferListings',
+                            'Offers', 'OfferSummary'
+                        ],
+                        RelationshipType='AuthorityTitle'
+                    )
+                    if result['sold_by_amazon']:
+                        item['sold_by_amazon'] = True
+                        item['sold_by_amazon_as_new'] = result['sold_by_amazon_as_new']
+                        break
+
+            return item
+        except:
+            raise

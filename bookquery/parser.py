@@ -24,7 +24,6 @@ class Parser:
         self._parser.set_element_class_lookup(lookup)
 
     def _get_item(self, data):
-        print('******** parser - parse ********')
         tree = objectify.parse(data, self._parser)
         root = tree.getroot()
 
@@ -89,7 +88,7 @@ class Parser:
                 alternate_asin.append(alternate_version.ASIN.text)
         for offer in offers:
             if offer.tag == '{' + nspace + '}' + 'Offer':
-                for child in offer:
+                for child in offer.getchildren():
                     if child.tag == '{' + nspace + '}' + 'Merchant':
                         sold_by_amazon = (child.Name.text == 'Amazon.com')
                     if child.tag == '{' + nspace + '}' + 'OfferAttributes':
@@ -97,5 +96,15 @@ class Parser:
 
         detail_page_url = item.DetailPageURL.text
 
-        return [detail_page_url, author, title, total_new, total_used,
-                lowest_new_price, lowest_used_price, sold_by_amazon, sold_by_amazon_as_new]
+        return {
+            'detail_page_url': detail_page_url,
+            'author': author,
+            'title': title,
+            'total_new': total_new,
+            'total_used': total_used,
+            'lowest_new_price': lowest_new_price,
+            'lowest_used_price': lowest_used_price,
+            'sold_by_amazon': sold_by_amazon,
+            'sold_by_amazon_as_new': sold_by_amazon_as_new,
+            'alternate_asin': alternate_asin
+        }

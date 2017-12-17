@@ -56,26 +56,45 @@ class BookQuery:
         datas = self._get_data(filepath)
 
         with open(output_filepath, "w", encoding="utf-8", newline="") as fd:
+            writer = csv.writer(fd, delimiter="\t")
+            header = ['identifier', 'title', 'creator', 'details', 'transformed_author', 'amzn-Author',
+                      'amzn-Title', 'DetailPageURL', 'TotalNew', 'TotalUsed', 'LowestNewPrice',
+                      'LowestUsedPrice', 'SoldByAmzn', 'SoldByAmznNew']
+            writer.writerow(header)
+
             for data in datas:
-                row = []
-                identifier = data[0]
-                title = data[1]
-                creator = data[2]
-                details = data[3]
-                transformed_author = self._get_transformed_author(creator)
+                try:
+                    row = []
+                    identifier = data[0]
+                    title = data[1]
+                    creator = data[2]
+                    details = data[3]
+                    transformed_author = self._get_transformed_author(creator)
 
-                row.append(identifier)
-                row.append(title)
-                row.append(creator)
-                row.append(details)
-                row.append(transformed_author)
-                row = row + query.execute_query(title, transformed_author)
+                    row.append(identifier)
+                    row.append(title)
+                    row.append(creator)
+                    row.append(details)
+                    row.append(transformed_author)
 
-                writer = csv.writer(fd, delimiter="\t")
-                writer.writerow(row)
+                    aws_item = query.execute_query(title, transformed_author)
+
+                    row.append(aws_item['detail_page_url'])
+                    row.append(aws_item['author'])
+                    row.append(aws_item['title'])
+                    row.append(aws_item['total_new'])
+                    row.append(aws_item['total_used'])
+                    row.append(aws_item['lowest_new_price'])
+                    row.append(aws_item['lowest_used_price'])
+                    row.append(aws_item['sold_by_amazon'])
+                    row.append(aws_item['sold_by_amazon_as_new'])
+
+                    writer.writerow(row)
+                except:
+                    e = sys.exc_info()[1]
+                    writer.writerow([e.code, e.msg])
 
         return output_filepath
-
 
 def _parse_args(args=sys.argv[1:]):
     parser = argparse.ArgumentParser(description='Provide Amazon Book Query search result as a tsv file format')
