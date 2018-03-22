@@ -37,6 +37,6 @@ AMAZON_ASSOC_KEY=amazon_associate_tag
 ## Example Usage
 The following command provide a path of output tsv file after run Amazon Book Query request
 ```
-$ amazon-book-query  test.tsv  test1.tsv
+$ amazon-book-query  -s "test.tsv"  -d "/~"
 
 ```
