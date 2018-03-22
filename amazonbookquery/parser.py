@@ -52,7 +52,8 @@ class Parser:
     def parse_item_lookup(self, data):
         item = self._get_item(data)
         nspace = item.nsmap[None]
-        author = detail_page_url = title = total_new = total_used = lowest_new_price = lowest_used_price = None
+        author = detail_page_url = title = lowest_collectible_price = lowest_new_price = lowest_used_price = None
+        total_new = total_used = total_collectible = 0
         sold_by_amazon = False
         sold_by_amazon_as_new = False
         alternate_asin = []
@@ -79,10 +80,14 @@ class Parser:
                 total_new = summary.text
             if summary.tag == '{' + nspace + '}' + 'TotalUsed':
                 total_used = summary.text
+            if summary.tag == '{' + nspace + '}' + 'TotalCollectible':
+                total_collectible = summary.text
             if summary.tag == '{' + nspace + '}' + 'LowestNewPrice':
-                lowest_new_price = summary.FormattedPrice.text
+                lowest_new_price = summary.Amount.text
             if summary.tag == '{' + nspace + '}' + 'LowestUsedPrice':
-                lowest_used_price = summary.FormattedPrice.text
+                lowest_used_price = summary.Amount.text
+            if summary.tag == '{' + nspace + '}' + 'LowestCollectiblePrice':
+                lowest_collectible_price = summary.Amount.text
         for alternate_version in alternate_versions:
             if alternate_version.tag == '{' + nspace + '}' + 'AlternateVersion':
                 alternate_asin.append(alternate_version.ASIN.text)
@@ -100,10 +105,12 @@ class Parser:
             'detail_page_url': detail_page_url,
             'author': author,
             'title': title,
-            'total_new': total_new,
-            'total_used': total_used,
+            'total_new': int(total_new),
+            'total_used': int(total_used),
+            'total_collectible': int(total_collectible),
             'lowest_new_price': lowest_new_price,
             'lowest_used_price': lowest_used_price,
+            'lowest_collectible_price': lowest_collectible_price,
             'sold_by_amazon': sold_by_amazon,
             'sold_by_amazon_as_new': sold_by_amazon_as_new,
             'alternate_asin': alternate_asin

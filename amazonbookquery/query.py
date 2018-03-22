@@ -13,10 +13,11 @@ from urllib.parse import quote
 from urllib.request import HTTPError
 from amazonbookquery.errors import *
 from amazonbookquery.parser import Parser
+from bs4 import BeautifulSoup
 
 class Query(object):
 
-    REQUESTS_PER_SECOND = 1000
+    REQUESTS_PER_SECOND = 1
 
     def __init__(self):
         self.access_key = os.getenv('AMAZON_ACCESS_KEY')
@@ -78,7 +79,7 @@ class Query(object):
         throttle = timedelta(seconds=1 / self.REQUESTS_PER_SECOND)
         if delta < throttle:
             wait = throttle - delta
-            # sleep(wait.seconds + wait.microseconds / 1000000.0)  # pragma: no cover
+            sleep(wait.seconds + wait.microseconds / 1000000.0)  # pragma: no cover
         self.last_call = datetime.now()
 
         response = requests.get(url, stream=True)
@@ -176,32 +177,15 @@ class Query(object):
             item = self._call(
                 Operation='ItemLookup',
                 ItemId=asin,
-                ResponseGroup=[
-                    'Accessories', 'AlternateVersions',
-                    'Images', 'ItemAttributes',
-                    'ItemIds', 'OfferFull', 'OfferListings',
-                    'Offers', 'OfferSummary'
-                ],
+                ResponseGroup=['AlternateVersions', 'ItemAttributes', 'OfferFull', 'Offers', 'OfferListings', 'OfferSummary'],
                 RelationshipType='AuthorityTitle'
             )
 
-            if not item['sold_by_amazon']:
-                for asin in item['alternate_asin']:
-                    result = self._call(
-                        Operation='ItemLookup',
-                        ItemId=asin,
-                        ResponseGroup=[
-                            'Accessories', 'AlternateVersions',
-                            'Images', 'ItemAttributes',
-                            'ItemIds', 'OfferFull', 'OfferListings',
-                            'Offers', 'OfferSummary'
-                        ],
-                        RelationshipType='AuthorityTitle'
-                    )
-                    if result['sold_by_amazon']:
-                        item['sold_by_amazon'] = True
-                        item['sold_by_amazon_as_new'] = result['sold_by_amazon_as_new']
-                        break
+            r = requests.get(item['detail_page_url'])
+            page_content = BeautifulSoup(r.text, 'html.parser')
+            # if you run this script on mac, please change 'html.parser' with 'lxml' to improve speed.
+
+            
 
             return item
         except:
