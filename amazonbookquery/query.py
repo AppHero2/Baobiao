@@ -13,7 +13,7 @@ from urllib.parse import quote
 from urllib.request import HTTPError
 from amazonbookquery.errors import *
 from amazonbookquery.parser import Parser
-from bs4 import BeautifulSoup
+from amazonbookquery.scrapy import Scrapy
 
 class Query(object):
 
@@ -181,11 +181,12 @@ class Query(object):
                 RelationshipType='AuthorityTitle'
             )
 
-            r = requests.get(item['detail_page_url'])
-            page_content = BeautifulSoup(r.text, 'html.parser')
-            # if you run this script on mac, please change 'html.parser' with 'lxml' to improve speed.
+            scrapy = Scrapy()
+            result = scrapy.scrape(item['detail_page_url'])
 
-            
+            item['total_new'] = result['total_new']
+            item['total_used'] = result['total_used']
+            item['total_collectible'] = result['total_collectible']
 
             return item
         except:
