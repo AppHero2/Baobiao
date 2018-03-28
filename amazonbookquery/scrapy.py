@@ -4,9 +4,20 @@ from bs4 import BeautifulSoup
 
 class Scrapy(object):
     def scrape(self, url):
-        # url = "https://www.amazon.com/How-Lose-Friends-Alienate-People/dp/B000R4HA6G?SubscriptionId=AKIAI43JB5HRRQCS6TXQ&tag=archivetestac&linkCode=xm2&camp=2025&creative=165953&creativeASIN=B000R4HA6G"
+        url = "https://www.amazon.com/Your-Mind-Can-Heal-You/dp/1163201189?SubscriptionId=AKIAI43JB5HRRQCS6TXQ&tag=archivetestac&linkCode=xm2&camp=2025&creative=165953&creativeASIN=1163201189"
         r = requests.get(url, headers={'User-Agent':'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.71 Safari/537.36'})
         content = BeautifulSoup(r.text, 'html.parser')
+        if r.status_code == 502:
+            return self.scrape(url)
+
+        bad_gate_way = content.select('body center h1')
+        if bad_gate_way:
+            if bad_gate_way.get_text() == "502 Bad Gateway":
+                return self.scrape(url)
+
+        captcha = content.find('input', {'id': 'captchacharacters'})
+        if captcha:
+            return self.scrape(url)
 
         return self.parse(content)
 
@@ -39,6 +50,9 @@ class Scrapy(object):
             total_new = total_new + data['count_new']
             total_used = total_used + data['count_used']
             total_collectible = total_collectible + data['count_collectible']
+
+        if total_new == 0 and total_used == 0:
+            print("empty count detected")
 
         ret = {
             'total_new' : total_new,
