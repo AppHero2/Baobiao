@@ -62,20 +62,21 @@ class BookQuery:
             writer.writerow(header)
 
             for data in datas:
-                try:
-                    row = []
-                    identifier = data[0]
-                    title = data[1]
-                    creator = data[2]
-                    volume = data[3]
-                    details = data[4]
-                    transformed_author = self._get_transformed_author(creator)
+                row = []
+                identifier = data[0]
+                title = data[1]
+                creator = data[2]
+                volume = data[3]
+                details = data[4]
 
-                    row.append(identifier)
-                    row.append(title)
-                    row.append(volume)
-                    row.append(creator)
-                    row.append(details)
+                row.append(identifier)
+                row.append(title)
+                row.append(volume)
+                row.append(creator)
+                row.append(details)
+
+                try:
+                    transformed_author = self._get_transformed_author(creator)
                     row.append(transformed_author)
 
                     aws_item = query.execute_query(title, transformed_author)
@@ -93,7 +94,7 @@ class BookQuery:
                     row.append(aws_item['sold_by_amazon_as_new'])
                 except AWSError:
                     e = sys.exc_info()[1]
-                    row = [e.code, e.msg]
+                    row.append(e.code + ": " + e.msg)
 
                 print(row)
                 writer.writerow(row)

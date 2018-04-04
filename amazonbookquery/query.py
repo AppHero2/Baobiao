@@ -187,6 +187,9 @@ class Query(object):
             item['total_new'] = result['total_new']
             item['total_used'] = result['total_used']
             item['total_collectible'] = result['total_collectible']
+            item['lowest_new_price'] = result['lowest_new_price']
+            item['lowest_used_price'] = result['lowest_used_price']
+            item['lowest_collectible_price'] = result['lowest_collectible_price']
 
             return item
         except:
